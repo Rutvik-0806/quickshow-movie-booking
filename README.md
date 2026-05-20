@@ -83,10 +83,18 @@ git push -u origin main
    - **Build command:** `npm install && npm run build && cd backend && npm install`
    - **Start command:** `cd backend && npm start`
    - **Health check path:** `/health`
-5. Environment variables:
-   - `NODE_ENV` = `production`
-   - `MONGODB_URI` = your Atlas connection string
+5. **Required** environment variable (without this, deploy fails):
+   - `MONGODB_URI` = your MongoDB Atlas connection string  
+     Example: `mongodb+srv://USER:PASS@cluster0.xxxxx.mongodb.net/movieproject?retryWrites=true&w=majority`
+   - `NODE_ENV` = `production` (set by Blueprint)
 6. Deploy. Live URL: `https://your-app.onrender.com`
+
+### Render deploy failed?
+
+1. **Set `MONGODB_URI`** on the `quickshow` web service → **Environment** → add variable → save → **Manual Deploy**.
+2. In **MongoDB Atlas** → **Network Access** → allow `0.0.0.0/0`.
+3. Push latest code, then **Blueprint → Manual sync** (or redeploy the web service).
+4. Check **Logs** on the failed deploy for `MONGODB_URI` or `dist/index.html` errors.
 
 Signup, login, and bookings use the real API and MongoDB on Render.
 

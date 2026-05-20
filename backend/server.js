@@ -1,6 +1,6 @@
-require('dotenv').config();
-
 const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/database');
@@ -10,9 +10,6 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 const isProduction = process.env.NODE_ENV === 'production';
-
-// Connect to MongoDB
-connectDB();
 
 const corsOrigins = [
   'http://localhost:5173',
@@ -195,11 +192,30 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔧 Test DB: http://localhost:${PORT}/api/test-db`);
-  console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
+const startServer = async () => {
+  await connectDB();
+
+  if (isProduction) {
+    const distPath = path.join(__dirname, '..', 'dist');
+    const fs = require('fs');
+    if (!fs.existsSync(path.join(distPath, 'index.html'))) {
+      console.error(
+        'FATAL: dist/index.html missing. Build step must run: npm run build'
+      );
+      process.exit(1);
+    }
+  }
+
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Health: /health`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+};
+
+startServer().catch((err) => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
 });
 
 module.exports = app;

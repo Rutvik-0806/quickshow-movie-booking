@@ -1,15 +1,17 @@
-# Render Blueprint — one web service (frontend + API)
-# https://render.com/docs/blueprint-spec
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# REQUIRED: In Render dashboard → Environment, set MONGODB_URI (MongoDB Atlas)
 services:
   - type: web
     name: quickshow
     runtime: node
     plan: free
-    buildCommand: npm install && npm run build && cd backend && npm install
-    startCommand: cd backend && npm start
+    buildCommand: npm install && npm run build && npm install --prefix backend
+    startCommand: npm start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_VERSION
+        value: "20"
       - key: MONGODB_URI
         sync: false
