@@ -1,0 +1,15 @@
+# Render Blueprint — one web service (frontend + API)
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: quickshow
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build && cd backend && npm install
+    startCommand: cd backend && npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
